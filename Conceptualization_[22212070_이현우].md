@@ -1,5 +1,5 @@
 # 1. Conceptualization
-<img width="400" alt="Medicine Helper Logo" src="./image_caa81f.jpg" />
+<img width="400" alt="Medicine Helper Logo" src="./" />
 
 |||
 | --- | --- |
@@ -47,7 +47,7 @@
 
 ## 2. System context diagram
 
-![System Context Diagram](./image_15.png)
+![System Context Diagram](./diagramimg.png)
 
 ---
 
