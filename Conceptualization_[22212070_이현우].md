@@ -52,7 +52,7 @@
 
 <img width="1451" height="720" alt="diagramimg" src="https://github.com/user-attachments/assets/323a7d91-8a77-4cd9-b30e-ce5baa50e095" />
 
-User->System
+**User->System**
 -login
 -register
 -logout
@@ -62,16 +62,16 @@ User->System
 -record user state
 -e-mail notification setup
 
-System->Server
+**System->Server**
 -request login
 -request logout
 -request register
 
-Server->System
+**Server->System**
 -provide e-mail api
 -provide medicine api
 
-System->User
+**System->User**
 -provide all information
 -recommend medicine
 
