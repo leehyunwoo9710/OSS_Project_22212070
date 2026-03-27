@@ -1,0 +1,93 @@
+# 💊 Medicine Helper
+[cite_start]**사용자의 안전한 약물 복용을 돕는 건강 관리 보조 프로그램** [cite: 21]
+
+## 📋 1. Project Overview
+* [cite_start]**Project Title**: Medicine Helper [cite: 1]
+* [cite_start]**Author**: 이현우 (Student ID: 22212070) [cite: 1]
+* [cite_start]**Contact**: lhw031103@yu.ac.kr [cite: 1]
+
+### Revision History
+| Revision Date | Version | Description | Author |
+| :--- | :--- | :--- | :--- |
+| 03/27/2026 | 1.00 | First draft | [cite_start]이현우 | [cite: 1]
+
+---
+
+## 🎯 2. Business Purpose
+* [cite_start]**정확한 의약품 정보의 필요성**: 2025년 통계에 따르면 국내 의약품 부작용 보고가 27만 건을 넘어섰으며, 특히 10대와 20대의 의약품 중독 환자가 급증하고 있습니다. [cite: 1]
+* [cite_start]**초고령 사회의 약물 오남용 방지**: 10종 이상의 약물을 복용하는 노인이 170만 명에 달하는 상황에서, 약의 효능뿐만 아니라 부작용 및 오남용 위험성을 사전에 인지할 수 있도록 돕는 디지털 헬스케어 솔루션이 필요합니다. [cite: 2]
+* **노인 약물 오복용 문제 (사회적 이슈)**: 
+  * [cite_start]최근 종각역 택시 사고(사망 1명, 부상 14명)의 원인으로 70대 후반 운전자에게서 감기약 관련 모르핀 양성 반응이 검출되었습니다. [cite: 2, 3] 
+  * [cite_start]이처럼 고령의 신체 상태와 특정 약이 결합하면 졸음 반응 등 심각한 문제를 일으킬 가능성이 다분합니다. [cite: 4]
+  * [cite_start]통계에 따르면 노인들은 주의사항 안내를 받은 적이 없거나 부실한 경우가 자주 발생합니다. [cite: 5]
+* [cite_start]**최종 목표**: 노인을 포함한 대한민국 구성원들에게 약에 대한 정확한 정보와 부작용 가능성을 제공하여, 약에 대한 관심을 높이고 효율적이고 안전한 약 복용을 돕습니다. [cite: 6]
+
+---
+
+## 🏗️ 3. System Context Diagram
+![System Context Diagram](./images/system_context_diagram.png) 
+*(이곳에 앞서 만든 다이어그램 이미지를 images 폴더에 넣고 경로를 맞춰주세요)*
+
+---
+
+## 🧑‍💻 4. Use Case List
+| No. | Use Case | Actor | Description |
+| :--- | :--- | :--- | :--- |
+| 1 | Login | User | [cite_start]사용자가 로그인을 한다. [cite: 7] |
+| 2 | register | User | [cite_start]사용자가 회원가입을 한다. [cite: 7] |
+| 3 | logout | User | [cite_start]사용자가 로그아웃을 한다. [cite: 7] |
+| 4 | view profile | User | [cite_start]사용자가 자신의 정보를 조회한다. [cite: 8] |
+| 5 | Medicine information | User | [cite_start]사용자가 약 정보를 검색한다. [cite: 8] |
+| 6 | personal medication info | User | [cite_start]사용자가 자신만의 약 정보를 기록한다. [cite: 9] |
+| 7 | record user state | User | [cite_start]사용자가 자신의 아픔 상태를 기록한다. [cite: 9] |
+| 8 | e-mail notification setup | User | [cite_start]사용자가 이메일 기반 알람 설정을 한다. [cite: 10] |
+| 9 | provide information | System | [cite_start]시스템이 사용자에게 약 관련 정보를 제공한다. [cite: 10] |
+| 10 | recommend medicine | System | [cite_start]시스템이 사용자에게 약을 추천한다. [cite: 10] |
+
+---
+
+## ⚙️ 5. Concept of Operation
+
+| Use Case | Purpose | Approach | Dynamics | Goals |
+| :--- | :--- | :--- | :--- | :--- |
+| **Login** | [cite_start]프로그램 사용을 위한 등록 사용자 확인 [cite: 11] | [cite_start]ID, PW 입력 후 서버에서 정보 조회 및 성공 여부 확인 [cite: 11] | [cite_start]앱 실행 시 로그인할 경우 [cite: 12] | [cite_start]로그인 기능 구현 [cite: 12] |
+| **register** | [cite_start]프로그램 사용을 위한 사용자 등록 [cite: 12] | [cite_start]정보 입력 및 ID 중복 확인 후 서버 저장 [cite: 12] | [cite_start]로그인을 위해 회원가입을 하는 경우 [cite: 12] | [cite_start]회원가입 기능 구현 [cite: 12] |
+| **logout** | [cite_start]사용 종료 및 다른 사용자 전환 [cite: 12] | [cite_start]사용자가 로그아웃을 할 수 있게 함 [cite: 12] | [cite_start]로그아웃을 실행할 경우 [cite: 12] | [cite_start]로그아웃 기능 구현 [cite: 12] |
+| **view profile** | [cite_start]사용자 정보 조회 [cite: 13] | [cite_start]자신의 정보를 확인하거나 바꿀 수 있음 [cite: 13] | [cite_start]정보를 확인/변경하고 싶은 경우 [cite: 13] | [cite_start]프로필 기능 구현 [cite: 13] |
+| **Medicine information** | [cite_start]약 정보 검색 [cite: 14] | [cite_start]상세정보 확인을 위해 약을 검색함 [cite: 14] | [cite_start]약 정보를 검색하는 경우 [cite: 14] | [cite_start]약 검색 기능 구현 [cite: 14] |
+| **personal medication info** | [cite_start]자신만의 약 리스트 구성 [cite: 14] | [cite_start]리스트에 복용할 약들을 담음 [cite: 14] | [cite_start]복용할 약 리스트를 관리할 경우 [cite: 14] | [cite_start]장바구니 개념의 개인 리스트 구현 [cite: 14] |
+| **record user state** | [cite_start]아픔 상태 작성 및 약 선택 [cite: 14] | [cite_start]자신의 아픔 상태를 작성함 [cite: 14] | [cite_start]상태에 따라 약을 선택하는 경우 [cite: 14] | [cite_start]아픈 상태를 작성하는 체크리스트 구현 [cite: 14] |
+| **e-mail notification setup** | [cite_start]약 복용 시간 알림 설정 [cite: 14] | [cite_start]약 먹을 시간이 되면 이메일 통보 [cite: 14] | [cite_start]복용 시간을 잊지 않게 알림을 원할 경우 [cite: 14] [cite_start]| e-mail 활용 알림 기능 구현 [cite: 14] |
+| **provide information** | [cite_start]약 관련 정보 제공 [cite: 14] | [cite_start]원하는 약의 상세정보 및 주의사항 제공 [cite: 14] | [cite_start]사용자가 약을 검색할 경우 [cite: 14, 15] | [cite_start]검색한 약 정보를 DB에서 얻어와 제공 [cite: 15] |
+| **recommend medicine** | [cite_start]몸 상태에 맞는 약 제안 [cite: 15] | [cite_start]몸 상태를 기반으로 알맞은 약 제안 [cite: 15] | [cite_start]약을 추천받고 싶을 때 [cite: 15] | [cite_start]상태 분석 후 알맞은 약 추천 기능 구현 [cite: 15] |
+
+---
+
+## 🚨 6. Problem Statement & Risk Management
+
+### Problem #1: Technical problem
+* [cite_start]**이슈**: API와 DB 관련 기술에 익숙하지 않음. [cite: 15]
+* [cite_start]**해결 방안**: 프로그램이 잘 작동하도록 API와 DB 관련 학습을 진행하고, 데이터 정보를 철저히 검토할 예정입니다. [cite: 16]
+
+### Problem #2: Potential Medical Law Violations
+* [cite_start]**이슈**: 의료법 제27조에 따른 무면허 의료행위 금지 이슈. [cite: 17]
+* [cite_start]**해결 방안**: 의사처럼 "A약을 B약으로 바꾸세요", "타이레놀을 드세요"와 같이 직접적인 결정을 내리거나 처방하지 않습니다. [cite: 17]
+* [cite_start]**안전장치**: 공공데이터에 있는 사실을 기반으로 상태에 맞는 약들의 '리스트'를 보여주는 형태로 구성하며, 본 프로그램은 의학적 진단이 아닌 **"건강 관리 보조 도구"**임을 명확히 명시합니다. [cite: 17, 18]
+
+### Problem #3: Data Accuracy & Liability
+* [cite_start]**이슈**: 공공데이터 API 정보가 실제 약의 정보와 미세하게 다를 수 있음. [cite: 19]
+* [cite_start]**해결 방안**: 본 프로그램은 보조적인 도움 수단일 뿐이며, 최종 책임은 사용자에게 있다는 면책 조항(Disclaimer)을 앱 내에 명시합니다. [cite: 20]
+
+---
+
+## 📖 7. Glossary
+* [cite_start]**Medicine Helper**: 사용자의 약 관련 생활 보조 프로그램 [cite: 21]
+* [cite_start]**리스트 (List)**: 사용자가 등록한 약들의 모음 [cite: 21]
+* [cite_start]**서버 (Server)**: 회원 정보 및 약 정보 등을 저장하기 위한 시스템 [cite: 21]
+
+---
+
+## 📚 8. References
+* [cite_start][Gmail API](https://developers.google.com/workspace/gmail/api/reference/rest?hl=ko) [cite: 21]
+* [cite_start][공공데이터포털 Medicine API](https://www.data.go.kr/index.do) [cite: 21]
+* [cite_start]이데일리 기사: [“약 안먹고 못버티는데…어떤 약이 위험한지 모르죠”](https://www.edaily.co.kr/) - 2026.01.06 [cite: 21]
