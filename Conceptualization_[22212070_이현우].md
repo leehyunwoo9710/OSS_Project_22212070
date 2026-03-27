@@ -52,27 +52,27 @@
 
 <img width="1451" height="720" alt="diagramimg" src="https://github.com/user-attachments/assets/323a7d91-8a77-4cd9-b30e-ce5baa50e095" />
 
-**User->System**
- -login
- -register
- -logout
- -view profile
- -medicine information
- -personal medication info
- -record user state
- -e-mail notification setup
+**User->System**<br>
+ -login<br>
+ -register<br>
+ -logout<br>
+ -view profile<br>
+ -medicine information<br>
+ -personal medication info<br>
+ -record user state<br>
+ -e-mail notification setup<br>
 
-**System->Server**
- -request login
- -request logout
- -request register
+**System->Server**<br>
+ -request login<br>
+ -request logout<br>
+ -request register<br>
 
-**Server->System**
- -provide e-mail api
+**Server->System**<br>
+ -provide e-mail api<br>
  -provide medicine api
 
-**System->User**
- -provide all information
+**System->User**<br>
+ -provide all information<br>
  -recommend medicine
 
 ---
