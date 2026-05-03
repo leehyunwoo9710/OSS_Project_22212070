@@ -1,5 +1,6 @@
 # 1. Conceptualization
-<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/d760c9ac-d095-46f3-8b72-759ce7fc01a5" />
+<img width="1408" height="768" alt="unnamed" src="https://github.com/user-attachments/assets/d310a9ac-1c0b-4c01-83fc-e23eb0d3468b" />
+ 
 
 
 |||
@@ -39,7 +40,8 @@
 * 또한 초고령 사회 진입으로 10종 이상의 약물을 복용하는 노인이 170만명에 달하는 상황에서, 사용자가 복용하려는 약의 효능뿐만 아니라 부작용 및 오남용 위험성을 사전에 인지할 수 있도록 돕는 디지털 헬스케어 솔루션이 요구된다.
 * 최근 발생한 종각역 택시 사고에서는 자동차 2대와 횡단보도에서 신호 대기 중이던 보행자들을 잇따라 들이받는 추돌사고를 일으켜 1명이 사망하고 14명이 부상을 입은 사건이 발생했다. 이 사건의 원인으로 택시운전사인 70대후반 남성에게 감기약 관련 모르핀 양성 반응이 검출된 것으로 알려졌다.
 * 이와 같이 고령의 신체상태와 특정 약이 결합하면 졸음 반응 등 문제를 일으킬 가능성 또한 다분하다고 여겨진다.
-  <img width="1140" height="403" alt="article" src="https://github.com/user-attachments/assets/f0acb0e1-5563-43f2-a358-a9eee9d8441b" />
+<img width="1140" height="403" alt="unnamed" src="https://github.com/user-attachments/assets/7039b4a5-4265-4168-8450-d31f13ddd716" />
+
 위의 사진에서 보이듯이 노인들의 약에 관한 정보가 적음을 알 수 있다
 
 ### **1-2 Goals:**
@@ -50,7 +52,8 @@
 
 ## 2. System context diagram
 
-<img width="1451" height="720" alt="diagramimg" src="https://github.com/user-attachments/assets/323a7d91-8a77-4cd9-b30e-ce5baa50e095" />
+<img width="642" height="320" alt="image" src="https://github.com/user-attachments/assets/61272ef4-c9fe-425b-8efc-f503e8c99a73" />
+
 
 **User->System**<br>
  -login<br>
