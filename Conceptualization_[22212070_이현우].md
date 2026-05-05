@@ -65,6 +65,7 @@
  -personal medication info<br>
  -record user state<br>
  -e-mail notification setup<br>
+ -Camera Scan<br>
 
 **System->Server**<br>
  -request login<br>
