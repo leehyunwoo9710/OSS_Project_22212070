@@ -17,6 +17,7 @@
 | Revision date | Version # | Description | Author |
 |---|---|---|---|
 | 03/27/2026 | 1.00 | First draft | 이현우 |
+| 05/05/2026 | 1.10 | Camera Scan 기능 추가 | 이현우 |
 
 ---
 
@@ -52,7 +53,7 @@
 
 ## 2. System context diagram
 
-<img width="642" height="320" alt="image" src="https://github.com/user-attachments/assets/61272ef4-c9fe-425b-8efc-f503e8c99a73" />
+<img width="642" height="321" alt="image" src="https://github.com/user-attachments/assets/d3f093cb-5ebf-42fa-b300-c807659c9efb" />
 
 
 **User->System**<br>
@@ -142,6 +143,12 @@
 | Actor | System |
 | Description | 시스템이 사용자에게 약을 추천한다. |
 
+### 11) Scan Medicine via Camera
+| 항목 | 내용 |
+|---|---|
+| Actor | User |
+| Description | 사용자가 카메라로 약을 스캔해서 정보를 얻는다. |
+
 ---
 
 ## 4. Concept of operation
@@ -225,6 +232,14 @@
 | Approach | 사용자의 몸 상태를 기반으로 그에 알맞는 약들을 제안한다 |
 | Dynamics | 사용자가 약을 추천받고 싶을때 |
 | Goals | 사용자의 상태를 분석해서 알맞는 약을 추천해주는 기능을 구현한다 |
+
+### 11) Scan Medicine via Camera
+| 항목 | 내용 |
+|---|---|
+| Purpose | 사용자가 카메라로 약을 스캔할 수 있게 해줌 |
+| Approach | 사용자가 카메라로 약을 스캔하면 약의 정보를 얻을 수 있음 |
+| Dynamics | 사용자가 카메라로 약을 스캔하고 싶을 때 |
+| Goals | 카메라로 사진에서 텍스트를 추출하여 정보를 제공할 수 있게 한다 |
 
 ---
 
