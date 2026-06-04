@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Helper</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <header class="app-header">
+            <div class="logo">
+                <h1>Medicine Helper</h1>
+            </div>
+            <div id="header-user-area" class="user-area">
+                <button id="login-btn" class="btn btn-outline">로그인</button>
+                <span id="welcome-msg" class="welcome-text hidden"></span>
+                <button id="profile-btn" class="btn btn-outline hidden">프로필</button>
+                <button id="logout-btn" class="btn btn-danger hidden">로그아웃</button>
+            </div>
+        </header>
+
+        <main class="layout-container">
+            <aside class="sidebar">
+                <section class="search-section card glass">
+                    <div class="checkbox-wrapper">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="child-search-checkbox">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">🧸 어린이용 약만 보기</span>
+                        </label>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="search-input" placeholder="약 이름을 입력하세요. (예: 타이레놀)" class="input-field">
+                    </div>
+                    <div class="button-group-vertical">
+                        <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
+                        <button id="camera-btn" class="btn btn-secondary">카메라 스캔</button>
+                        <button id="search-btn" class="btn btn-primary">검색</button>
+                    </div>
+                </section>
+
+                <section class="menu-section card glass">
+                    <button id="menu-recommend" class="btn btn-menu">증상별 약 추천</button>
+                    <button id="menu-cart" class="btn btn-menu">나의 복약 리스트</button>
+                    <button id="menu-alarm" class="btn btn-menu">복약 알림</button>
+                </section>
+            </aside>
+
+            <section class="content-area">
+                <div id="search-result-area" class="hidden result-container"></div>
+
+                <div id="cart-display-area" class="hidden result-container card cart-card glass">
+                    <h3 class="card-title">나의 복약 리스트</h3>
+                    <ul id="cart-list" class="cart-list"></ul>
+                </div>
+
+                <div id="recommend-display-area" class="hidden result-container card recommend-card glass">
+                    <h3 class="card-title">증상별 약 추천</h3>
+                    <p class="card-subtitle">증상을 선택하거나 직접 입력하세요.</p>
+
+                    <div id="symptom-options" class="symptom-grid">
+                        <label class="custom-checkbox"><input type="checkbox" value="두통"><span class="checkmark"></span><span class="checkbox-label">두통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="치통"><span class="checkmark"></span><span class="checkbox-label">치통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="근육통"><span class="checkmark"></span><span class="checkbox-label">근육통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="발열"><span class="checkmark"></span><span class="checkbox-label">발열</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="콧물"><span class="checkmark"></span><span class="checkbox-label">콧물</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="기침"><span class="checkmark"></span><span class="checkbox-label">기침</span></label>
+                    </div>
+
+                    <div class="custom-symptom-wrapper">
+                        <input type="text" id="symptom-custom-input" placeholder="기타 증상을 콤마로 구분해 입력하세요. 예: 소화불량" class="input-field">
+                        <p class="help-text">여러 증상은 콤마(,)로 구분해서 입력하세요.</p>
+                    </div>
+
+                    <div class="checkbox-wrapper" style="margin-bottom: 20px;">
+                        <label class="custom-checkbox child-theme">
+                            <input type="checkbox" id="child-recommend-checkbox">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">🧸 어린이용 약만 추천받기</span>
+                        </label>
+                    </div>
+
+                    <button id="get-recommendation-btn" class="btn btn-success">추천 약품 보기</button>
+                    <div id="recommend-result" class="hidden recommend-result-wrapper"></div>
+                </div>
+            </section>
+        </main>
+
+        <div id="auth-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn" id="close-modal">&times;</span>
+                <h2 id="modal-title">로그인</h2>
+                <div style="margin-top: 20px;">
+                    <div id="auth-error-msg" class="error-text hidden"></div>
+                    <input type="text" id="username-input" placeholder="아이디">
+                    <input type="email" id="email-input" class="hidden" placeholder="이메일">
+                    <input type="password" id="password-input" placeholder="비밀번호">
+                    <button id="submit-auth-btn" class="btn btn-primary">계속하기</button>
+                    <p id="toggle-auth-mode">계정이 없으신가요? <b>회원가입</b></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal hidden">
+            <div class="modal-content glass">
+                <span class="close-btn" id="close-profile-modal">&times;</span>
+                <h2>내 프로필</h2>
+                <div style="margin-top: 20px; text-align: left;">
+                    <label class="card-subtitle" style="display:block; margin-bottom:5px;">아이디 (수정 불가)</label>
+                    <input type="text" id="profile-username" readonly class="input-field" style="background:#f1f5f9; cursor:not-allowed;">
+                    
+                    <label class="card-subtitle" style="display:block; margin-bottom:5px; margin-top:15px;">이메일</label>
+                    <input type="email" id="profile-email" class="input-field">
+                    
+                    <label class="card-subtitle" style="display:block; margin-bottom:5px; margin-top:15px;">비밀번호</label>
+                    <input type="password" id="profile-password" class="input-field">
+                    
+                    <button id="save-profile-btn" class="btn btn-primary" style="margin-top: 25px;">저장하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

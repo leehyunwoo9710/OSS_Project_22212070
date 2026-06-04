@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      # ddl-auto: 엔티티 기반으로 DB 테이블을 자동 생성/수정 (운영에서는 validate 권장)
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
