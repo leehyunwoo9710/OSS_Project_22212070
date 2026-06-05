@@ -12,8 +12,8 @@ RUN ./gradlew bootJar -x test
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-# 빌드된 jar 파일 복사
-COPY --from=build /app/build/libs/*.jar app.jar
+
+COPY --from=build /app/build/libs/backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Render에서 사용할 포트
 EXPOSE 8080
