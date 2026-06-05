@@ -74,89 +74,114 @@ public class OCRProcessor {
     private String parseDrugName(String rawText) {
         if (rawText == null || rawText.isEmpty())
             return "";
-            
-        String[] lines = rawText.split("\n");
-        
-        for (String line : lines) {
-            String trimmed = line.trim();
-            String normalizedTrimmed = trimmed.replaceAll("\\s+", "");
-            
-            // 1차 필터링: 불필요한 단어 및 너무 짧은 단어 제외 (정확한 금지어 필터링 추가)
-            if (normalizedTrimmed.length() <= 1 || 
-                normalizedTrimmed.matches(".*[0-9]+(mg|밀리그램|ml).*") || 
-                normalizedTrimmed.matches("^[0-9]+$") || // 오직 숫자로만 이루어진 줄
-                normalizedTrimmed.contains("밀리그램") ||
-                normalizedTrimmed.equals("밀리") ||
-                normalizedTrimmed.equals("그램") ||
-                normalizedTrimmed.equals("효능") ||
-                normalizedTrimmed.equals("효과") ||
-                normalizedTrimmed.equals("용법") ||
-                normalizedTrimmed.equals("용량") ||
-                normalizedTrimmed.equals("주의사항") ||
-                normalizedTrimmed.contains("제조") || 
-                normalizedTrimmed.contains("약국") ||
-                normalizedTrimmed.contains("일반의약품") ||
-                normalizedTrimmed.contains("전문의약품") ||
-                normalizedTrimmed.equals("정") || 
-                normalizedTrimmed.equals("연질캡슐") || 
-                normalizedTrimmed.equals("캡슐")) {
+
+        // 1. 단어 단위로 분리 (뛰어쓰기 및 줄바꿈 기준)
+        String[] rawWords = rawText.split("\\s+");
+        List<String> searchCandidates = new ArrayList<>();
+
+        // 2. 검색을 위한 불용어(Stopwords) 필터링 (순수 키워드만 추출)
+        for (String word : rawWords) {
+            String trimmed = word.trim().replaceAll("[^가-힣a-zA-Z0-9]", ""); // 특수기호 제거
+            if (trimmed.length() < 2 || trimmed.matches("^[0-9a-zA-Z]+$")) continue;
+
+            // 금지어 (검색어로 쓰이면 안 되는 너무 흔한 단어들)
+            if (trimmed.contains("효능") || trimmed.contains("효과") || trimmed.contains("용법") ||
+                trimmed.contains("용량") || trimmed.contains("주의") || trimmed.contains("부작용") ||
+                trimmed.contains("제약") || trimmed.contains("약품") || trimmed.contains("성분") ||
+                trimmed.contains("원료") || trimmed.contains("제조") || trimmed.contains("판매") ||
+                trimmed.contains("보관") || trimmed.contains("상담") || trimmed.contains("주식회사") ||
+                trimmed.contains("소비자") || trimmed.contains("보호") || trimmed.contains("처방") ||
+                trimmed.contains("보존") || trimmed.contains("첨가") || trimmed.contains("기한") ||
+                trimmed.contains("밀리") || trimmed.contains("그램") || trimmed.contains("mg") ||
+                trimmed.contains("ml") || trimmed.equals("어린이") || trimmed.equals("성인") ||
+                trimmed.contains("안전상비") || trimmed.equals("일반") || trimmed.equals("전문") ||
+                trimmed.contains("수입") || trimmed.contains("에탄올") || trimmed.contains("나트륨") ||
+                trimmed.contains("진통") || trimmed.contains("해열") || trimmed.contains("소염") ||
+                trimmed.contains("감기") || trimmed.contains("기침") || trimmed.contains("두통") ||
+                trimmed.contains("약국")) {
                 continue;
             }
+            searchCandidates.add(trimmed);
+        }
 
-            // 2차 검증: 공공데이터 API에 검색하여 유효한 약인지 확인
-            try {
-                // OCR 오인식 방지를 위해 뒷부분의 "정", "장", "캡슐", "시럽" 등을 잘라내고 검색 시도
-                String searchKeyword = normalizedTrimmed;
-                if (searchKeyword.length() > 2) {
-                    if (searchKeyword.endsWith("정") || searchKeyword.endsWith("장") || searchKeyword.endsWith("산")) {
-                        searchKeyword = searchKeyword.substring(0, searchKeyword.length() - 1);
-                    } else if (searchKeyword.endsWith("캡슐") || searchKeyword.endsWith("시럽")) {
-                        searchKeyword = searchKeyword.substring(0, searchKeyword.length() - 2);
-                    }
+        if (searchCandidates.isEmpty()) {
+            return fallbackParse(rawText);
+        }
+
+        // 3. API 검색 및 채점(Scoring) 로직
+        String bestMatchName = null;
+        int highestScore = -1;
+
+        // 최대 3개의 유력한 단어 후보로 검색 시도
+        int searchLimit = Math.min(3, searchCandidates.size());
+
+        for (int i = 0; i < searchLimit; i++) {
+            String searchKeyword = searchCandidates.get(i);
+
+            // 검색 정확도를 위해 끝에 붙은 제형 제거
+            if (searchKeyword.length() > 2) {
+                if (searchKeyword.endsWith("정") || searchKeyword.endsWith("장") || searchKeyword.endsWith("산")) {
+                    searchKeyword = searchKeyword.substring(0, searchKeyword.length() - 1);
+                } else if (searchKeyword.endsWith("캡슐") || searchKeyword.endsWith("시럽")) {
+                    searchKeyword = searchKeyword.substring(0, searchKeyword.length() - 2);
                 }
+            }
 
-                DrugInfoResponseDto response = MedicineAPI.fetchDrugInfo(searchKeyword, 1, 10, false);
-                if (response != null && response.getBody() != null 
-                    && response.getBody().getItems() != null 
-                    && !response.getBody().getItems().isEmpty()) {
-                    
-                    String fallbackMatch = null;
+            try {
+                DrugInfoResponseDto response = MedicineAPI.fetchDrugInfo(searchKeyword, 1, 15, false);
+                if (response != null && response.getBody() != null && response.getBody().getItems() != null) {
 
                     for (DrugInfoResponseDto.Item item : response.getBody().getItems()) {
-                        if (item.getItemName() != null) {
-                            String apiItemNameNormalized = item.getItemName().replaceAll("\\s+", "");
-                            
-                            // 1순위: 약 이름이 검색어로 '시작'하는 경우 (가장 정확한 매칭)
-                            if (apiItemNameNormalized.startsWith(searchKeyword)) {
-                                return item.getItemName();
-                            }
-                            
-                            // 2순위: 약 이름에 검색어가 '포함'되어 있는 경우 (제조사 이름이 앞에 붙은 경우 등 대비)
-                            if (fallbackMatch == null && apiItemNameNormalized.contains(searchKeyword)) {
-                                fallbackMatch = item.getItemName();
+                        if (item.getItemName() == null) continue;
+
+                        String apiItemName = item.getItemName().replaceAll("\\s+", "");
+                        int score = 0;
+
+                        // 채점(Scoring): OCR 원본 텍스트의 파편들이 이 약품명에 얼마나 많이 녹아있는지 검사
+                        // 예: OCR에 "어린이", "부루펜", "시럽" 이 있었다면 각각 점수 합산 (+8점)
+                        for (String ocrWord : rawWords) {
+                            String cleanWord = ocrWord.trim().replaceAll("[^가-힣a-zA-Z0-9]", "");
+                            if (cleanWord.length() >= 2 && apiItemName.contains(cleanWord)) {
+                                score += cleanWord.length(); // 단어 길이를 가중치로 부여
                             }
                         }
-                    }
-                    
-                    // 시작하는(startsWith) 약은 없었지만 포함된(contains) 약이 있다면 그것을 반환
-                    if (fallbackMatch != null) {
-                        return fallbackMatch;
+
+                        // 최고 점수를 받은 약품을 기억
+                        if (score > highestScore) {
+                            highestScore = score;
+                            bestMatchName = item.getItemName();
+                        }
                     }
                 }
             } catch (Exception e) {
-                // API 호출 중 오류 발생 시, 해당 단어는 건너뛰고 다음 단어 검사
+                // API 호출 에러 시 다음 단어로 넘어감
                 continue;
             }
+
+            // 첫 번째 검색어로 충분히 확신할 만한(점수가 높은) 결과가 나왔다면 조기 종료
+            if (highestScore >= searchKeyword.length()) {
+                break;
+            }
         }
-        
-        // API에서 하나도 일치하는 것을 찾지 못했다면, 필터링을 거친 첫 번째 유효 단어를 반환
+
+        if (bestMatchName != null) {
+            return bestMatchName;
+        }
+
+        // 4. API 매칭 실패 시 폴백
+        return fallbackParse(rawText);
+    }
+
+    private String fallbackParse(String rawText) {
+        String[] lines = rawText.split("\n");
         for (String line : lines) {
             String trimmed = line.trim();
-            if (trimmed.length() > 1 && !trimmed.matches(".*[0-9]+(mg|밀리그램|ml).*") && !trimmed.contains("밀리그램") && !trimmed.contains("제조") && !trimmed.contains("약국") && !trimmed.contains("일반의약품")) {
+            if (trimmed.length() > 1 && !trimmed.matches(".*[0-9]+(mg|밀리그램|ml).*") &&
+                !trimmed.contains("밀리그램") && !trimmed.contains("제조") &&
+                !trimmed.contains("약국") && !trimmed.contains("일반의약품")) {
                 return trimmed;
             }
         }
-        
         return lines[0].trim();
     }
 }
