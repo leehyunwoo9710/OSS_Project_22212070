@@ -34,6 +34,14 @@ const recommendBtn = document.getElementById("get-recommendation-btn");
 const recommendResult = document.getElementById("recommend-result");
 const customSymptomInput = document.getElementById("symptom-custom-input");
 
+const alarmDisplayArea = document.getElementById("alarm-display-area");
+const alarmTimeInput = document.getElementById("alarm-time-input");
+const setAlarmBtn = document.getElementById("set-alarm-btn");
+const menuAlarmBtn = document.getElementById("menu-alarm");
+const isDailyCheckbox = document.getElementById("is-daily-checkbox");
+const alarmTimeOnlyInput = document.getElementById("alarm-time-only-input");
+const currentAlarmsList = document.getElementById("current-alarms-list");
+
 let currentUser = null;
 let isLoginMode = true;
 
@@ -121,6 +129,9 @@ logoutBtn.addEventListener("click", () => {
     logoutBtn.classList.add("hidden");
     cartDisplayArea.classList.add("hidden");
     recommendArea.classList.add("hidden");
+    if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    if (searchWrapper) searchWrapper.classList.add("hidden");
 });
 
 closeProfileModal.addEventListener("click", () => profileModal.classList.add("hidden"));
@@ -189,6 +200,10 @@ searchBtn.addEventListener("click", async () => {
         return;
     }
 
+    cartDisplayArea.classList.add("hidden");
+    recommendArea.classList.add("hidden");
+    if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
+
     await renderSearchResults(query);
 });
 
@@ -201,7 +216,13 @@ cameraInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    resultArea.classList.remove("hidden");
+    cartDisplayArea.classList.add("hidden");
+    recommendArea.classList.add("hidden");
+    if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
+
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    searchWrapper.classList.remove("hidden");
+    document.getElementById("search-title").innerText = `스캔 결과`;
     resultArea.innerHTML = `<div class="result-card"><h3>카메라 이미지 분석 중...</h3><p>잠시만 기다려주세요.</p></div>`;
 
     const formData = new FormData();
@@ -271,7 +292,9 @@ function normalizeItems(items) {
 }
 
 async function renderSearchResults(query) {
-    resultArea.classList.remove("hidden");
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    searchWrapper.classList.remove("hidden");
+    document.getElementById("search-title").innerText = `'${query}' 검색 결과`;
     resultArea.innerHTML = `<div class="result-card"><h3>검색 중...</h3></div>`;
 
     try {
@@ -372,9 +395,14 @@ async function renderCart() {
         }
 
         cartList.innerHTML = items.map(item => `
-            <li style="display:flex; justify-content:space-between; gap:12px; padding:10px; border-bottom:1px solid #eee;">
-                <span>${escapeHtml(item.itemName ?? "알 수 없는 약")}</span>
-                <button onclick="removeFromCart(${item.id})" style="background:#ff4757; color:white; padding:5px;">삭제</button>
+            <li style="display:flex; flex-direction:column; gap:8px; padding:15px 10px; border-bottom:1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:bold; color:var(--primary); font-size:15px;">${escapeHtml(item.itemName ?? "알 수 없는 약")}</span>
+                    <button onclick="removeFromCart(${item.id})" style="background:#ff4757; border:none; border-radius:6px; color:white; padding:6px 12px; cursor:pointer; font-weight:bold;">삭제</button>
+                </div>
+                <div style="font-size:13px; color:var(--text-muted); line-height:1.4;">
+                    <b>💊 효능/증상:</b> ${escapeHtml(item.efcyQesitm ?? "증상 정보가 없습니다.")}
+                </div>
             </li>
         `).join("");
     } catch (error) {
@@ -390,6 +418,9 @@ document.getElementById("menu-cart").addEventListener("click", async () => {
 
     cartDisplayArea.classList.toggle("hidden");
     recommendArea.classList.add("hidden");
+    if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    if (searchWrapper) searchWrapper.classList.add("hidden");
 
     if (!cartDisplayArea.classList.contains("hidden")) {
         await renderCart();
@@ -404,6 +435,107 @@ document.getElementById("menu-recommend").addEventListener("click", () => {
 
     recommendArea.classList.toggle("hidden");
     cartDisplayArea.classList.add("hidden");
+    if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    if (searchWrapper) searchWrapper.classList.add("hidden");
+});
+
+menuAlarmBtn?.addEventListener("click", async () => {
+    if (!currentUser) {
+        alert("먼저 로그인해주세요.");
+        return;
+    }
+
+    alarmDisplayArea.classList.toggle("hidden");
+    cartDisplayArea.classList.add("hidden");
+    recommendArea.classList.add("hidden");
+    const searchWrapper = document.getElementById("search-result-wrapper");
+    if (searchWrapper) searchWrapper.classList.add("hidden");
+
+    if (!alarmDisplayArea.classList.contains("hidden")) {
+        await renderAlarms();
+    }
+});
+
+isDailyCheckbox?.addEventListener("change", (e) => {
+    if (e.target.checked) {
+        alarmTimeInput.classList.add("hidden");
+        alarmTimeOnlyInput.classList.remove("hidden");
+    } else {
+        alarmTimeInput.classList.remove("hidden");
+        alarmTimeOnlyInput.classList.add("hidden");
+    }
+});
+
+setAlarmBtn?.addEventListener("click", async () => {
+    if (!currentUser) {
+        alert("먼저 로그인해주세요.");
+        return;
+    }
+
+    const isDaily = isDailyCheckbox?.checked || false;
+    let alarmTimeStr = "";
+
+    if (isDaily) {
+        const timeVal = alarmTimeOnlyInput.value;
+        if (!timeVal) {
+            alert("알림 시간을 설정해주세요.");
+            return;
+        }
+        
+        // Calculate next occurrence
+        const now = new Date();
+        const [hours, minutes] = timeVal.split(":");
+        const alarmDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hours), parseInt(minutes), 0);
+        
+        if (alarmDate <= now) {
+            // If the time has already passed today, set it for tomorrow
+            alarmDate.setDate(alarmDate.getDate() + 1);
+        }
+        
+        // Format as ISO string (yyyy-MM-ddTHH:mm:ss) but localized
+        const tzOffset = alarmDate.getTimezoneOffset() * 60000; // offset in milliseconds
+        const localISOTime = (new Date(alarmDate - tzOffset)).toISOString().slice(0, -1);
+        
+        alarmTimeStr = localISOTime;
+    } else {
+        alarmTimeStr = alarmTimeInput.value;
+        if (!alarmTimeStr) {
+            alert("알림 시간을 설정해주세요.");
+            return;
+        }
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/notifications/set`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ 
+                username: currentUser,
+                alarmTime: alarmTimeStr,
+                isDaily: isDaily
+            })
+        });
+
+        if (!response.ok) {
+            const msg = await response.text();
+            throw new Error(msg || "알림 설정에 실패했습니다.");
+        }
+
+        const result = await response.text();
+        alert(result);
+        if (isDaily) {
+            alarmTimeOnlyInput.value = "";
+        } else {
+            alarmTimeInput.value = "";
+        }
+        
+        await renderAlarms();
+    } catch (error) {
+        alert(error.message);
+    }
 });
 
 async function fetchDrugBySymptom(symptom, numOfRows = 1, isChild = false) {
@@ -463,26 +595,45 @@ recommendBtn.addEventListener("click", async () => {
 
         if (filteredItems.length === 0) {
             resultsHtml += `
-                <div class="recommend-card" style="border-left-color:#94a3b8;">
+                <div class="recommend-card-item" style="border-left-color:#94a3b8;">
                     <span><b>${escapeHtml(symptoms.join(", "))}</b>: 해당 증상을 모두 만족하는 약이 없습니다.</span>
                 </div>
             `;
         } else {
-            // 단일 증상이든 복수 증상이든 필터링된 약들 중 하나를 무작위로 선택
-            const randomIndex = Math.floor(Math.random() * filteredItems.length);
-            const selectedItem = filteredItems[randomIndex];
-            const encoded = encodeURIComponent(JSON.stringify(selectedItem));
+            // Shuffle filteredItems and pick up to 5
+            const shuffled = [...filteredItems].sort(() => 0.5 - Math.random());
+            const selectedItems = shuffled.slice(0, 5);
             
-            resultsHtml += `
-                <div class="recommend-card">
-                    <span><b>${escapeHtml(symptoms.join(", "))}</b>: ${escapeHtml(selectedItem.itemName)}</span>
-                    <button class="header-btn" style="background:#007bff; margin-left:10px;" onclick="addToCart('${encoded}')">추가</button>
-                </div>
-            `;
+            resultsHtml += `<div style="margin-bottom: 15px; font-weight:bold; color:var(--primary); font-size: 15px;">💡 [${escapeHtml(symptoms.join(", "))}] 증상 맞춤 추천 (최대 5개)</div>`;
+            
+            selectedItems.forEach(item => {
+                const encoded = encodeURIComponent(JSON.stringify(item));
+                const atpnFull = item.atpnQesitm || "주의사항 정보가 없습니다.";
+                const isLong = atpnFull.length > 100;
+                const atpnShort = isLong ? atpnFull.substring(0, 100) + "..." : atpnFull;
+                
+                const atpnHtml = isLong ? `
+                    <span class="atpn-short">${escapeHtml(atpnShort)}</span>
+                    <span class="atpn-full hidden" style="display:block; margin-top:5px;">${escapeHtml(atpnFull).replace(/\\n/g, '<br>')}</span>
+                    <button class="btn btn-outline" style="padding: 0; font-size:12px; margin-left:5px; border:none; background:transparent; color:#2563eb; cursor:pointer; text-decoration:underline;" onclick="const parent = this.parentElement; parent.querySelector('.atpn-short').classList.toggle('hidden'); parent.querySelector('.atpn-full').classList.toggle('hidden'); this.innerText = this.innerText === '더보기' ? '접기' : '더보기';">더보기</button>
+                ` : `<span>${escapeHtml(atpnFull)}</span>`;
+                
+                resultsHtml += `
+                    <div class="recommend-card-item" style="padding: 15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                            <span style="font-weight:bold; font-size:15px; color:var(--text-main);">${escapeHtml(item.itemName)}</span>
+                            <button class="btn btn-secondary" style="padding: 6px 12px; font-size:13px;" onclick="addToCart('${encoded}')">목록에 추가</button>
+                        </div>
+                        <div style="font-size:13px; color:#dc2626; background:#fef2f2; padding:8px; border-radius:6px; line-height:1.5;">
+                            <b>⚠️ 주의사항:</b> ${atpnHtml}
+                        </div>
+                    </div>
+                `;
+            });
         }
     } catch (error) {
         resultsHtml += `
-            <div class="recommend-card" style="border-left-color:#ef4444;">
+            <div class="recommend-card-item" style="border-left-color:#ef4444;">
                 <span><b>${escapeHtml(symptoms.join(", "))}</b>: ${escapeHtml(error.message)}</span>
             </div>
         `;
@@ -494,6 +645,61 @@ recommendBtn.addEventListener("click", async () => {
         checkbox.checked = false;
     });
 });
+
+function deleteAlarm(id) {
+    if (!confirm("정말 이 알림을 삭제하시겠습니까?")) return;
+    
+    fetch(`${API_BASE_URL}/api/notifications/${id}`, {
+        method: "DELETE",
+        headers: { "X-Username": currentUser }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("알림 삭제에 실패했습니다.");
+        renderAlarms();
+    })
+    .catch(err => alert(err.message));
+}
+
+async function renderAlarms() {
+    if (!currentUser) return;
+    if (currentAlarmsList) currentAlarmsList.innerHTML = "<li>로딩 중...</li>";
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/notifications/list`, {
+            headers: { "X-Username": currentUser }
+        });
+        
+        if (!response.ok) {
+            throw new Error("알림 목록을 불러오는데 실패했습니다.");
+        }
+        
+        const alarms = await response.json();
+        
+        if (alarms.length === 0) {
+            if (currentAlarmsList) currentAlarmsList.innerHTML = "<li>등록된 알림이 없습니다.</li>";
+            return;
+        }
+        
+        if (currentAlarmsList) {
+            currentAlarmsList.innerHTML = alarms.map(alarm => {
+                const dateObj = new Date(alarm.alarmTime);
+                const formatted = dateObj.toLocaleString("ko-KR", { 
+                    year: "numeric", month: "2-digit", day: "2-digit",
+                    hour: "2-digit", minute: "2-digit"
+                });
+                const dailyText = alarm.daily ? " <span style='color:var(--primary); font-weight:bold;'>(매일 반복)</span>" : "";
+                return `
+                    <li style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px dashed var(--border-color);">
+                        <span>🕒 ${formatted}${dailyText}</span>
+                        <button onclick="deleteAlarm(${alarm.id})" style="background:#ff4757; border:none; border-radius:6px; color:white; padding:4px 8px; cursor:pointer; font-size:12px;">삭제</button>
+                    </li>
+                `;
+            }).join("");
+        }
+    } catch (error) {
+        if (currentAlarmsList) currentAlarmsList.innerHTML = `<li>${escapeHtml(error.message)}</li>`;
+    }
+}
 
 function escapeHtml(value) {
     return String(value)
