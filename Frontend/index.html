@@ -36,7 +36,10 @@
                         <input type="text" id="search-input" placeholder="약 이름을 입력하세요. (예: 타이레놀)" class="input-field">
                     </div>
                     <div class="button-group-vertical">
-                        <button id="camera-btn" class="btn btn-secondary">📷 웹캠으로 스캔</button>
+                        <button id="camera-btn" class="btn btn-secondary" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px;">
+                            <span>📷 웹캠으로 스캔</span>
+                            <span style="font-size: 13px; font-weight: normal; opacity: 0.85;">(휴대폰 사용을 권장합니다)</span>
+                        </button>
                         <input type="file" id="file-input" accept="image/*" class="hidden">
                         <button id="file-upload-btn" class="btn btn-outline" style="border-color: var(--secondary); color: var(--secondary);">🖼️ 사진 파일 업로드</button>
                         <button id="search-btn" class="btn btn-primary">검색</button>
