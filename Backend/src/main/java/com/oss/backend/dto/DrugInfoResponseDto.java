@@ -29,11 +29,13 @@ public class DrugInfoResponseDto {
     @Getter
     @Setter
     public static class Item {
-        private String itemName;        // ??
-        private String itemSeq;         // ??
-        private String efcyQesitm;      // 1, ?
-        private String useMethodQesitm; // 2, ??
-        private String atpnQesitm;      // 4, ?
-        private String seQesitm;        // 6, ?
+        private String itemName;        // 약 이름
+        private String itemSeq;         // 약품 품목 기준 코드
+        private String efcyQesitm;      // 약의 효능/증상
+        private String useMethodQesitm; // 복용법/사용법
+        private String atpnQesitm;      // 주의사항
+        private String seQesitm;        // 부작용
+        private String depositMethodQesitm; // 보관법
+        private String intrcQesitm;     // 상호작용
     }
 }

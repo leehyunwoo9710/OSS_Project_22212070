@@ -15,15 +15,15 @@ public class Medicine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String itemName;        // ??
-    private String itemSeq;         // ??
+    private String itemName;        // 약 이름
+    private String itemSeq;         // 약품 품목 기준 코드
     
-    // ????????TEXT ????
+    // 증상/효능 관련 정보 (TEXT)
     @Column(columnDefinition = "TEXT")
-    private String efcyQesitm;      // 1, ?
+    private String efcyQesitm;      // 약의 효능/증상
     
     @Column(columnDefinition = "TEXT")
-    private String useMethodQesitm; // 2, ??
+    private String useMethodQesitm; // 복용법/사용법
     
     @Column(columnDefinition = "TEXT")
     private String atpnQesitm;      // 4, ?
@@ -32,7 +32,7 @@ public class Medicine {
     private String seQesitm;        // 6, ?
 
     @Column(nullable = false)
-    private String username;        // ??????
+    private String username;        // 해당 약을 담은 사용자 이름
 
     public Medicine(String itemName, String itemSeq, String efcyQesitm, String useMethodQesitm, String atpnQesitm, String seQesitm, String username) {
         this.itemName = itemName;
