@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/cart")
 public class DrugCartController {
 

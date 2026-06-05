@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/ocr")
-@CrossOrigin(origins = "*")
 public class OcrController {
 
     private final OCRProcessor OCRProcessor;
