@@ -36,12 +36,14 @@
                         <input type="text" id="search-input" placeholder="약 이름을 입력하세요. (예: 타이레놀)" class="input-field">
                     </div>
                     <div class="button-group-vertical">
-                        <button id="camera-btn" class="btn btn-secondary" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px;">
+                        <button id="camera-btn" class="btn btn-secondary"
+                            style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 12px;">
                             <span>📷 웹캠으로 스캔</span>
                             <span style="font-size: 13px; font-weight: normal; opacity: 0.85;">(휴대폰 사용을 권장합니다)</span>
                         </button>
                         <input type="file" id="file-input" accept="image/*" class="hidden">
-                        <button id="file-upload-btn" class="btn btn-outline" style="border-color: var(--secondary); color: var(--secondary);">🖼️ 사진 파일 업로드</button>
+                        <button id="file-upload-btn" class="btn btn-outline"
+                            style="border-color: var(--secondary); color: var(--secondary);">🖼️ 사진 파일 업로드</button>
                         <button id="search-btn" class="btn btn-primary">검색</button>
                     </div>
                 </section>
@@ -55,33 +57,45 @@
 
             <section class="content-area">
                 <div id="search-result-wrapper" class="hidden result-container card glass" style="position:relative;">
-                    <span class="close-btn" onclick="document.getElementById('search-result-wrapper').classList.add('hidden')">&times;</span>
+                    <span class="close-btn"
+                        onclick="document.getElementById('search-result-wrapper').classList.add('hidden')">&times;</span>
                     <h3 class="card-title" id="search-title">검색 결과</h3>
                     <div id="search-result-area"></div>
                 </div>
 
-                <div id="cart-display-area" class="hidden result-container card cart-card glass" style="position:relative;">
-                    <span class="close-btn" onclick="document.getElementById('cart-display-area').classList.add('hidden')">&times;</span>
+                <div id="cart-display-area" class="hidden result-container card cart-card glass"
+                    style="position:relative;">
+                    <span class="close-btn"
+                        onclick="document.getElementById('cart-display-area').classList.add('hidden')">&times;</span>
                     <h3 class="card-title">나의 복약 리스트</h3>
                     <ul id="cart-list" class="cart-list"></ul>
                 </div>
 
-                <div id="recommend-display-area" class="hidden result-container card recommend-card glass" style="position:relative;">
-                    <span class="close-btn" onclick="document.getElementById('recommend-display-area').classList.add('hidden')">&times;</span>
+                <div id="recommend-display-area" class="hidden result-container card recommend-card glass"
+                    style="position:relative;">
+                    <span class="close-btn"
+                        onclick="document.getElementById('recommend-display-area').classList.add('hidden')">&times;</span>
                     <h3 class="card-title">증상별 약 추천</h3>
                     <p class="card-subtitle">증상을 선택하거나 직접 입력하세요.</p>
 
                     <div id="symptom-options" class="symptom-grid">
-                        <label class="custom-checkbox"><input type="checkbox" value="두통"><span class="checkmark"></span><span class="checkbox-label">두통</span></label>
-                        <label class="custom-checkbox"><input type="checkbox" value="치통"><span class="checkmark"></span><span class="checkbox-label">치통</span></label>
-                        <label class="custom-checkbox"><input type="checkbox" value="근육통"><span class="checkmark"></span><span class="checkbox-label">근육통</span></label>
-                        <label class="custom-checkbox"><input type="checkbox" value="발열"><span class="checkmark"></span><span class="checkbox-label">발열</span></label>
-                        <label class="custom-checkbox"><input type="checkbox" value="콧물"><span class="checkmark"></span><span class="checkbox-label">콧물</span></label>
-                        <label class="custom-checkbox"><input type="checkbox" value="기침"><span class="checkmark"></span><span class="checkbox-label">기침</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="두통"><span
+                                class="checkmark"></span><span class="checkbox-label">두통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="치통"><span
+                                class="checkmark"></span><span class="checkbox-label">치통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="근육통"><span
+                                class="checkmark"></span><span class="checkbox-label">근육통</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="발열"><span
+                                class="checkmark"></span><span class="checkbox-label">발열</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="콧물"><span
+                                class="checkmark"></span><span class="checkbox-label">콧물</span></label>
+                        <label class="custom-checkbox"><input type="checkbox" value="기침"><span
+                                class="checkmark"></span><span class="checkbox-label">기침</span></label>
                     </div>
 
                     <div class="custom-symptom-wrapper">
-                        <input type="text" id="symptom-custom-input" placeholder="기타 증상을 콤마로 구분해 입력하세요. 예: 소화불량" class="input-field">
+                        <input type="text" id="symptom-custom-input" placeholder="기타 증상을 콤마로 구분해 입력하세요. 예: 소화불량"
+                            class="input-field">
                         <p class="help-text">여러 증상은 콤마(,)로 구분해서 입력하세요.</p>
                     </div>
 
@@ -97,13 +111,19 @@
                     <div id="recommend-result" class="hidden recommend-result-wrapper"></div>
                 </div>
 
-                <div id="alarm-display-area" class="hidden result-container card alarm-card glass" style="position:relative;">
-                    <span class="close-btn" onclick="document.getElementById('alarm-display-area').classList.add('hidden')">&times;</span>
+                <div id="alarm-display-area" class="hidden result-container card alarm-card glass"
+                    style="position:relative;">
+                    <span class="close-btn"
+                        onclick="document.getElementById('alarm-display-area').classList.add('hidden')">&times;</span>
                     <h3 class="card-title">복약 알림 설정</h3>
-                    
-                    <div id="current-alarms-container" style="margin-bottom: 20px; background: rgba(255,255,255,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
-                        <label class="card-subtitle" style="display:block; margin-bottom:10px; font-weight:bold; color:var(--primary);">현재 등록된 알림</label>
-                        <ul id="current-alarms-list" style="list-style:none; padding:0; margin:0; font-size:14px; color:var(--text-main);">
+
+                    <div id="current-alarms-container"
+                        style="margin-bottom: 20px; background: rgba(255,255,255,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <label class="card-subtitle"
+                            style="display:block; margin-bottom:10px; font-weight:bold; color:var(--primary);">현재 등록된
+                            알림</label>
+                        <ul id="current-alarms-list"
+                            style="list-style:none; padding:0; margin:0; font-size:14px; color:var(--text-main);">
                             <li>로딩 중...</li>
                         </ul>
                     </div>
@@ -147,14 +167,15 @@
                 <h2>내 프로필</h2>
                 <div style="margin-top: 20px; text-align: left;">
                     <label class="card-subtitle" style="display:block; margin-bottom:5px;">아이디 (수정 불가)</label>
-                    <input type="text" id="profile-username" readonly class="input-field" style="background:#f1f5f9; cursor:not-allowed;">
-                    
+                    <input type="text" id="profile-username" readonly class="input-field"
+                        style="background:#f1f5f9; cursor:not-allowed;">
+
                     <label class="card-subtitle" style="display:block; margin-bottom:5px; margin-top:15px;">이메일</label>
                     <input type="email" id="profile-email" class="input-field">
-                    
+
                     <label class="card-subtitle" style="display:block; margin-bottom:5px; margin-top:15px;">비밀번호</label>
                     <input type="password" id="profile-password" class="input-field">
-                    
+
                     <button id="save-profile-btn" class="btn btn-primary" style="margin-top: 25px;">저장하기</button>
                 </div>
             </div>
@@ -165,15 +186,20 @@
             <div class="modal-content glass" style="max-width: 600px;">
                 <span class="close-btn" id="close-camera-modal">&times;</span>
                 <h2>카메라 스캔</h2>
-                <div class="camera-wrapper" style="position: relative; width: 100%; margin-top: 20px; border-radius: 12px; overflow: hidden; background: #000; min-height: 250px;">
-                    <div id="camera-permission-msg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; font-weight: bold; z-index: 10;">
+                <div class="camera-wrapper"
+                    style="position: relative; width: 100%; margin-top: 20px; border-radius: 12px; overflow: hidden; background: #000; min-height: 250px;">
+                    <div id="camera-permission-msg"
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; font-weight: bold; z-index: 10;">
                         카메라 권한을 허용해주세요...<br>
                         <span style="font-size: 12px; font-weight: normal; color: #cbd5e1;">(브라우저 상단의 팝업 확인)</span>
                     </div>
-                    <video id="camera-video" autoplay playsinline style="width: 100%; display: block; object-fit: cover; aspect-ratio: 4/3;"></video>
+                    <video id="camera-video" autoplay playsinline
+                        style="width: 100%; display: block; object-fit: cover; aspect-ratio: 4/3;"></video>
                     <canvas id="camera-canvas" class="hidden"></canvas>
                 </div>
                 <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">약품 이름이 잘 보이도록 정면에서 촬영해주세요.</p>
+                <p style="font-size: 13px; color: #ef4444; font-weight: bold; margin-top: 5px;">⚠️ 제미나이 AI 분석 중 트래픽이 몰리면
+                    지연될 수 있습니다.</p>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button id="capture-btn" class="btn btn-primary" style="flex: 1;">📸 촬영하기</button>
                     <button id="switch-camera-btn" class="btn btn-outline" style="flex: 1;">🔄 카메라 전환</button>

@@ -55,7 +55,14 @@ const isDailyCheckbox = document.getElementById("is-daily-checkbox");
 const alarmTimeOnlyInput = document.getElementById("alarm-time-only-input");
 const currentAlarmsList = document.getElementById("current-alarms-list");
 
-let currentUser = null;
+let currentUser = localStorage.getItem("currentUser") || null;
+if (currentUser) {
+    loginBtn.classList.add("hidden");
+    welcomeMsg.innerText = `${currentUser}`;
+    welcomeMsg.classList.remove("hidden");
+    profileBtn.classList.remove("hidden");
+    logoutBtn.classList.remove("hidden");
+}
 let isLoginMode = true;
 
 loginBtn.addEventListener("click", () => {
@@ -122,6 +129,7 @@ submitAuthBtn.addEventListener("click", async () => {
         authErrorMsg.classList.add("hidden");
 
         currentUser = username;
+        localStorage.setItem("currentUser", username);
         authModal.classList.add("hidden");
         loginBtn.classList.add("hidden");
         welcomeMsg.innerText = `${currentUser}`;
@@ -136,6 +144,7 @@ submitAuthBtn.addEventListener("click", async () => {
 
 logoutBtn.addEventListener("click", () => {
     currentUser = null;
+    localStorage.removeItem("currentUser");
     loginBtn.classList.remove("hidden");
     welcomeMsg.classList.add("hidden");
     profileBtn.classList.add("hidden");

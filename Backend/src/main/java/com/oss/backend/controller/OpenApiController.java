@@ -3,7 +3,6 @@ package com.oss.backend.controller;
 import com.oss.backend.dto.DrugInfoResponseDto;
 import com.oss.backend.service.MedicineAPI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +23,7 @@ public class OpenApiController {
             @RequestParam("itemName") String itemName,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = "10") int numOfRows,
-            @RequestParam(defaultValue = "false") boolean isChild
-    ) {
+            @RequestParam(defaultValue = "false") boolean isChild) {
         DrugInfoResponseDto data = MedicineAPI.fetchDrugInfo(itemName, pageNo, numOfRows, isChild);
         return ResponseEntity.ok(data);
     }
@@ -35,8 +33,7 @@ public class OpenApiController {
             @RequestParam("symptom") String symptom,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = "10") int numOfRows,
-            @RequestParam(defaultValue = "false") boolean isChild
-    ) {
+            @RequestParam(defaultValue = "false") boolean isChild) {
         DrugInfoResponseDto data = MedicineAPI.fetchDrugBySymptom(symptom, pageNo, numOfRows, isChild);
         return ResponseEntity.ok(data);
     }

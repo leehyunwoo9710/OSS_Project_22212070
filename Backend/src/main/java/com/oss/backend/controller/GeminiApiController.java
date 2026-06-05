@@ -1,6 +1,6 @@
 package com.oss.backend.controller;
 
-import com.oss.backend.service.OCRProcessor;
+import com.oss.backend.service.GeminiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,18 +9,18 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/ocr")
-public class OcrController {
+public class GeminiApiController {
 
-    private final OCRProcessor OCRProcessor;
+    private final GeminiService geminiService;
 
-    public OcrController(OCRProcessor OCRProcessor) {
-        this.OCRProcessor = OCRProcessor;
+    public GeminiApiController(GeminiService geminiService) {
+        this.geminiService = geminiService;
     }
 
     @PostMapping("/scan")
     public ResponseEntity<?> scanImage(@RequestParam("image") MultipartFile image) {
         try {
-            String text = OCRProcessor.extractTextFromImage(image);
+            String text = geminiService.extractMedicineNameFromImage(image);
             Map<String, String> response = new HashMap<>();
             response.put("text", text);
             return ResponseEntity.ok(response);
