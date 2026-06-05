@@ -11,3 +11,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+
+app:
+  mail:
+    script-url: ${APP_MAIL_SCRIPT_URL}

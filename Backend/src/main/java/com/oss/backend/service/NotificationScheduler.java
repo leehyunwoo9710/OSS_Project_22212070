@@ -5,12 +5,14 @@ import com.oss.backend.entity.User;
 import com.oss.backend.repository.MedicineAlarmRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +22,10 @@ import java.util.List;
 public class NotificationScheduler {
 
     private final MedicineAlarmRepository alarmRepository;
-    private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${app.mail.script-url}")
+    private String scriptUrl;
 
     // [알람 설정] : 사용자, 시간, 매일 반복 여부를 DB에 저장
     @Transactional
@@ -69,18 +74,18 @@ public class NotificationScheduler {
         }
     }
 
-    // [이메일 전송 로직] : SimpleMailMessage를 이용해 실제 메일 발송
+    // [이메일 전송 로직] : 구글 앱스 스크립트 웹 앱을 이용해 우회 발송
     private boolean sendEmail(MedicineAlarm alarm) {
         User user = alarm.getUser();
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(user.getEmail());
-            message.setSubject("[Medicine Helper] 약 복용 시간 알림 💊");
-            
             String content = user.getUsername() + " 님 설정하신 약의 복용시간입니다!" + (alarm.isDaily() ? " (매일 반복)" : "");
-            message.setText(content);
             
-            mailSender.send(message);
+            Map<String, String> payload = new HashMap<>();
+            payload.put("to", user.getEmail());
+            payload.put("subject", "[Medicine Helper] 약 복용 시간 알림 💊");
+            payload.put("body", content);
+
+            restTemplate.postForEntity(scriptUrl, payload, String.class);
             return true;
         } catch (Exception e) {
             log.error("Error sending email: ", e);
