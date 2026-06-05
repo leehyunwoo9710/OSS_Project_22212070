@@ -36,8 +36,9 @@
                         <input type="text" id="search-input" placeholder="약 이름을 입력하세요. (예: 타이레놀)" class="input-field">
                     </div>
                     <div class="button-group-vertical">
-                        <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
-                        <button id="camera-btn" class="btn btn-secondary">카메라 스캔</button>
+                        <button id="camera-btn" class="btn btn-secondary">📷 웹캠으로 스캔</button>
+                        <input type="file" id="file-input" accept="image/*" class="hidden">
+                        <button id="file-upload-btn" class="btn btn-outline" style="border-color: var(--secondary); color: var(--secondary);">🖼️ 사진 파일 업로드</button>
                         <button id="search-btn" class="btn btn-primary">검색</button>
                     </div>
                 </section>
@@ -152,6 +153,27 @@
                     <input type="password" id="profile-password" class="input-field">
                     
                     <button id="save-profile-btn" class="btn btn-primary" style="margin-top: 25px;">저장하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WebRTC Camera Modal -->
+        <div id="web-camera-modal" class="modal hidden">
+            <div class="modal-content glass" style="max-width: 600px;">
+                <span class="close-btn" id="close-camera-modal">&times;</span>
+                <h2>카메라 스캔</h2>
+                <div class="camera-wrapper" style="position: relative; width: 100%; margin-top: 20px; border-radius: 12px; overflow: hidden; background: #000; min-height: 250px;">
+                    <div id="camera-permission-msg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; font-weight: bold; z-index: 10;">
+                        카메라 권한을 허용해주세요...<br>
+                        <span style="font-size: 12px; font-weight: normal; color: #cbd5e1;">(브라우저 상단의 팝업 확인)</span>
+                    </div>
+                    <video id="camera-video" autoplay playsinline style="width: 100%; display: block; object-fit: cover; aspect-ratio: 4/3;"></video>
+                    <canvas id="camera-canvas" class="hidden"></canvas>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">약품 이름이 잘 보이도록 정면에서 촬영해주세요.</p>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="capture-btn" class="btn btn-primary" style="flex: 1;">📸 촬영하기</button>
+                    <button id="switch-camera-btn" class="btn btn-outline" style="flex: 1;">🔄 카메라 전환</button>
                 </div>
             </div>
         </div>
