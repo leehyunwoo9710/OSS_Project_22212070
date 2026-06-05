@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
+// 메인 함수 실행
 public class BackendApplication {
 
 	public static void main(String[] args) {
