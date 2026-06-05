@@ -79,7 +79,7 @@ public class GeminiService {
     private Map<String, Object> buildPrompt(String base64Image, String mimeType) {
         Map<String, Object> textPart = new HashMap<>();
         textPart.put("text",
-                "이 이미지 속에 적힌 핵심적인 약 이름 하나만 정확히 파악해서 알려줘. 제품의 전체 이름 대신 제일 중요한 약품명 키워드만 뽑아. 부가적인 설명이나 마침표, 줄바꿈은 절대로 붙이지 말고 오직 단어만 출력해.");
+                "너는 약품 패키지 분석을 전문으로 하는 AI 약사야. 주어진 이미지에서 가장 핵심이 되는 '약품명' 키워드 하나만 추출해줘. [규칙] 1. 제약사 이름(예: 종근당, 대웅제약, 녹십자 등)은 무조건 제외할 것. 2. 용량(예: 500mg, 10ml 등)과 제형(예: 정, 캡슐, 연질캡슐, 시럽 등)은 제외할 것. 3. 오직 약품 검색 API에 활용될 수 있는 가장 핵심적인 고유 명사(상표명) 하나만 대답할 것. 4. 부연 설명, 마침표, 줄바꿈 없이 오직 정답 단어 하나만 단답형으로 출력할 것.");
 
         Map<String, Object> inlineData = new HashMap<>();
         inlineData.put("mimeType", mimeType);
