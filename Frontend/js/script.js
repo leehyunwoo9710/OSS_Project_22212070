@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://localhost:8080";
+// 웹 호스팅용 백엔드 주소 
+const API_BASE_URL = "https://oss-project-22212070.onrender.com";
+
 
 const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
@@ -24,7 +26,18 @@ const saveProfileBtn = document.getElementById("save-profile-btn");
 const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search-btn");
 const cameraBtn = document.getElementById("camera-btn");
-const cameraInput = document.getElementById("camera-input");
+const fileInput = document.getElementById("file-input");
+const fileUploadBtn = document.getElementById("file-upload-btn");
+const webCameraModal = document.getElementById("web-camera-modal");
+const closeCameraModal = document.getElementById("close-camera-modal");
+const cameraVideo = document.getElementById("camera-video");
+const cameraCanvas = document.getElementById("camera-canvas");
+const captureBtn = document.getElementById("capture-btn");
+const switchCameraBtn = document.getElementById("switch-camera-btn");
+const cameraPermissionMsg = document.getElementById("camera-permission-msg");
+
+let currentStream = null;
+let useFrontCamera = false;
 const resultArea = document.getElementById("search-result-area");
 const cartDisplayArea = document.getElementById("cart-display-area");
 const cartList = document.getElementById("cart-list");
@@ -138,48 +151,48 @@ closeProfileModal.addEventListener("click", () => profileModal.classList.add("hi
 
 profileBtn.addEventListener("click", async () => {
     if (!currentUser) return;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
             headers: { "X-Username": currentUser }
         });
-        
+
         if (!response.ok) throw new Error("프로필을 불러오는데 실패했습니다.");
-        
+
         const data = await response.json();
         profileUsername.value = data.username;
         profileEmail.value = data.email || "";
         profilePassword.value = data.password;
-        
+
         profileModal.classList.remove("hidden");
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     }
 });
 
 saveProfileBtn.addEventListener("click", async () => {
     if (!currentUser) return;
-    
+
     const email = profileEmail.value.trim();
     const password = profilePassword.value.trim();
-    
+
     if (!password) {
         alert("비밀번호는 비워둘 수 없습니다.");
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
             method: "PUT",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
-                "X-Username": currentUser 
+                "X-Username": currentUser
             },
             body: JSON.stringify({ email, password })
         });
-        
+
         if (!response.ok) throw new Error("프로필 저장에 실패했습니다.");
-        
+
         const data = await response.json();
         if (data.success) {
             alert("프로필 수정 완료");
@@ -187,7 +200,7 @@ saveProfileBtn.addEventListener("click", async () => {
         } else {
             alert(data.message);
         }
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     }
 });
@@ -207,15 +220,18 @@ searchBtn.addEventListener("click", async () => {
     await renderSearchResults(query);
 });
 
-cameraBtn.addEventListener("click", () => {
-    alert("약 사진을 정확히 정면에서 촬영해주세요.");
-    cameraInput.click();
+fileUploadBtn.addEventListener("click", () => {
+    fileInput.click();
 });
 
-cameraInput.addEventListener("change", async (e) => {
+fileInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    await processOcrImage(file);
+    fileInput.value = ""; // Reset input
+});
 
+async function processOcrImage(file) {
     cartDisplayArea.classList.add("hidden");
     recommendArea.classList.add("hidden");
     if (alarmDisplayArea) alarmDisplayArea.classList.add("hidden");
@@ -240,24 +256,91 @@ cameraInput.addEventListener("change", async (e) => {
         }
 
         const data = await response.json();
-        
+
         if (!data.text || data.text === "인식된 텍스트가 없습니다.") {
             throw new Error("이미지에서 텍스트를 인식하지 못했습니다. 다시 촬영해주세요.");
         }
 
-        // 검색창에 결과 입력 후 바로 검색 실행
         searchInput.value = data.text;
         await renderSearchResults(data.text);
-        
+
     } catch (error) {
         resultArea.innerHTML = `<div class="result-card" style="border-left-color:#ef4444;">
             <h3>분석 실패</h3>
             <p>${escapeHtml(error.message)}</p>
         </div>`;
-    } finally {
-        // 같은 파일을 다시 선택해도 이벤트가 발생하도록 value 초기화
-        cameraInput.value = "";
     }
+}
+
+// WebRTC Camera Logic
+async function startCamera() {
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+
+    const constraints = {
+        video: {
+            facingMode: useFrontCamera ? "user" : "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    cameraPermissionMsg.classList.remove("hidden");
+    cameraPermissionMsg.innerHTML = `카메라 권한을 허용해주세요...<br><span style="font-size: 12px; font-weight: normal; color: #cbd5e1;">(브라우저 상단의 팝업 확인)</span>`;
+    webCameraModal.classList.remove("hidden");
+
+    try {
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        cameraVideo.srcObject = currentStream;
+        cameraPermissionMsg.classList.add("hidden");
+    } catch (err) {
+        cameraPermissionMsg.innerHTML = `권한이 거부되었거나<br>연결된 카메라가 없습니다.`;
+        alert("카메라에 접근할 수 없습니다. 권한을 허용해주시거나 기기에 연결된 카메라를 확인해주세요.");
+        console.error("Camera error:", err);
+    }
+}
+
+function stopCamera() {
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+    }
+    webCameraModal.classList.add("hidden");
+}
+
+cameraBtn.addEventListener("click", () => {
+    useFrontCamera = false; // Start with back camera
+    startCamera();
+});
+
+closeCameraModal.addEventListener("click", stopCamera);
+
+switchCameraBtn.addEventListener("click", () => {
+    useFrontCamera = !useFrontCamera;
+    startCamera();
+});
+
+captureBtn.addEventListener("click", () => {
+    if (!currentStream) return;
+
+    // Set canvas dimensions to video's actual dimensions
+    cameraCanvas.width = cameraVideo.videoWidth;
+    cameraCanvas.height = cameraVideo.videoHeight;
+
+    const ctx = cameraCanvas.getContext("2d");
+    ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+
+    // Convert to Blob and process
+    cameraCanvas.toBlob(async (blob) => {
+        if (!blob) {
+            alert("이미지 캡처에 실패했습니다.");
+            return;
+        }
+        const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+        stopCamera();
+        await processOcrImage(file);
+    }, "image/jpeg", 0.9);
 });
 
 async function fetchDrugItems(query, numOfRows = 10, isChild = false) {
@@ -326,7 +409,7 @@ function renderDrugCard(item) {
     `;
 }
 
-window.addToCart = async function(encodedItem) {
+window.addToCart = async function (encodedItem) {
     if (!currentUser) {
         alert("먼저 로그인해주세요.");
         return;
@@ -337,7 +420,7 @@ window.addToCart = async function(encodedItem) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "X-Username": currentUser
             },
@@ -358,9 +441,9 @@ window.addToCart = async function(encodedItem) {
     }
 };
 
-window.removeFromCart = async function(id) {
+window.removeFromCart = async function (id) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/cart/${id}`, { 
+        const response = await fetch(`${API_BASE_URL}/api/cart/${id}`, {
             method: "DELETE",
             headers: { "X-Username": currentUser }
         });
@@ -482,21 +565,21 @@ setAlarmBtn?.addEventListener("click", async () => {
             alert("알림 시간을 설정해주세요.");
             return;
         }
-        
+
         // Calculate next occurrence
         const now = new Date();
         const [hours, minutes] = timeVal.split(":");
         const alarmDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hours), parseInt(minutes), 0);
-        
+
         if (alarmDate <= now) {
             // If the time has already passed today, set it for tomorrow
             alarmDate.setDate(alarmDate.getDate() + 1);
         }
-        
+
         // Format as ISO string (yyyy-MM-ddTHH:mm:ss) but localized
         const tzOffset = alarmDate.getTimezoneOffset() * 60000; // offset in milliseconds
         const localISOTime = (new Date(alarmDate - tzOffset)).toISOString().slice(0, -1);
-        
+
         alarmTimeStr = localISOTime;
     } else {
         alarmTimeStr = alarmTimeInput.value;
@@ -509,10 +592,10 @@ setAlarmBtn?.addEventListener("click", async () => {
     try {
         const response = await fetch(`${API_BASE_URL}/api/notifications/set`, {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 username: currentUser,
                 alarmTime: alarmTimeStr,
                 isDaily: isDaily
@@ -531,7 +614,7 @@ setAlarmBtn?.addEventListener("click", async () => {
         } else {
             alarmTimeInput.value = "";
         }
-        
+
         await renderAlarms();
     } catch (error) {
         alert(error.message);
@@ -574,12 +657,12 @@ recommendBtn.addEventListener("click", async () => {
 
     try {
         const isChildRecommend = document.getElementById("child-recommend-checkbox")?.checked;
-        
+
         // 첫 번째 증상을 기준으로 여러 개의 약을 먼저 가져옵니다 (최대 50개) - 백엔드에서 필터링 적용됨
         let items = await fetchDrugBySymptom(symptoms[0], 50, isChildRecommend);
-        
+
         let filteredItems = items;
-        
+
         // 복수 증상인 경우, 나머지 증상들도 효능에 포함되어 있는지 필터링
         if (symptoms.length > 1) {
             filteredItems = items.filter(item => {
@@ -603,21 +686,21 @@ recommendBtn.addEventListener("click", async () => {
             // Shuffle filteredItems and pick up to 5
             const shuffled = [...filteredItems].sort(() => 0.5 - Math.random());
             const selectedItems = shuffled.slice(0, 5);
-            
+
             resultsHtml += `<div style="margin-bottom: 15px; font-weight:bold; color:var(--primary); font-size: 15px;">💡 [${escapeHtml(symptoms.join(", "))}] 증상 맞춤 추천 (최대 5개)</div>`;
-            
+
             selectedItems.forEach(item => {
                 const encoded = encodeURIComponent(JSON.stringify(item));
                 const atpnFull = item.atpnQesitm || "주의사항 정보가 없습니다.";
                 const isLong = atpnFull.length > 100;
                 const atpnShort = isLong ? atpnFull.substring(0, 100) + "..." : atpnFull;
-                
+
                 const atpnHtml = isLong ? `
                     <span class="atpn-short">${escapeHtml(atpnShort)}</span>
                     <span class="atpn-full hidden" style="display:block; margin-top:5px;">${escapeHtml(atpnFull).replace(/\\n/g, '<br>')}</span>
                     <button class="btn btn-outline" style="padding: 0; font-size:12px; margin-left:5px; border:none; background:transparent; color:#2563eb; cursor:pointer; text-decoration:underline;" onclick="const parent = this.parentElement; parent.querySelector('.atpn-short').classList.toggle('hidden'); parent.querySelector('.atpn-full').classList.toggle('hidden'); this.innerText = this.innerText === '더보기' ? '접기' : '더보기';">더보기</button>
                 ` : `<span>${escapeHtml(atpnFull)}</span>`;
-                
+
                 resultsHtml += `
                     <div class="recommend-card-item" style="padding: 15px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
@@ -648,42 +731,42 @@ recommendBtn.addEventListener("click", async () => {
 
 function deleteAlarm(id) {
     if (!confirm("정말 이 알림을 삭제하시겠습니까?")) return;
-    
+
     fetch(`${API_BASE_URL}/api/notifications/${id}`, {
         method: "DELETE",
         headers: { "X-Username": currentUser }
     })
-    .then(res => {
-        if (!res.ok) throw new Error("알림 삭제에 실패했습니다.");
-        renderAlarms();
-    })
-    .catch(err => alert(err.message));
+        .then(res => {
+            if (!res.ok) throw new Error("알림 삭제에 실패했습니다.");
+            renderAlarms();
+        })
+        .catch(err => alert(err.message));
 }
 
 async function renderAlarms() {
     if (!currentUser) return;
     if (currentAlarmsList) currentAlarmsList.innerHTML = "<li>로딩 중...</li>";
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/notifications/list`, {
             headers: { "X-Username": currentUser }
         });
-        
+
         if (!response.ok) {
             throw new Error("알림 목록을 불러오는데 실패했습니다.");
         }
-        
+
         const alarms = await response.json();
-        
+
         if (alarms.length === 0) {
             if (currentAlarmsList) currentAlarmsList.innerHTML = "<li>등록된 알림이 없습니다.</li>";
             return;
         }
-        
+
         if (currentAlarmsList) {
             currentAlarmsList.innerHTML = alarms.map(alarm => {
                 const dateObj = new Date(alarm.alarmTime);
-                const formatted = dateObj.toLocaleString("ko-KR", { 
+                const formatted = dateObj.toLocaleString("ko-KR", {
                     year: "numeric", month: "2-digit", day: "2-digit",
                     hour: "2-digit", minute: "2-digit"
                 });
